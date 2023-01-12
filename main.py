@@ -129,15 +129,15 @@ def input_complex_sign(message):
 
 @bot.message_handler(commands=['logs'])
 def send_logs(message):
+    log = ''
     with open('logdata.txt', 'r') as file:
         lines = file.readlines()
-        log = ''
         for line in lines:
             username = str(message.from_user.username)
             if username in line:
                 log += ' '
                 log += str(line)
-    bot.send_message(message.chat.id, 'Ваша история операций:', log)
+    bot.send_message(message.chat.id, 'Ваша история операций:'+ log)
 
 
 bot.infinity_polling()
