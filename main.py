@@ -9,14 +9,9 @@ import telebot
 import config
 import datetime
 
-
-
-
-
 bot = telebot.TeleBot(config.token)
 
 dtn = datetime.datetime.now()
-
 
 
 @bot.message_handler(commands=['start'])
@@ -29,7 +24,7 @@ def send_start(message):
 @bot.message_handler(commands=['help'])
 def send_help(message):
     bot.send_message(message.chat.id,
-                     'Для работы с рациональными числами введите /rational, для работы с комплексными числами введите /complex')
+                     'Для работы с рациональными числами введите /rational, для работы с комплексными числами введите /complex, для получения лога операций введите /logs')
 
 
 @bot.message_handler(commands=['rational'])
@@ -76,14 +71,10 @@ def input_rational_sign(message):
     global data
     data = f'{rational.return_x()} {sign} {rational.return_y()} = {result}'
     with open('logdata.txt', 'a') as file:
-        file.write(str(dtn.strftime("%d-%m-%Y %H:%M")) + ' ' + message.from_user.username + ' id' + str(message.from_user.id) + ' ' + data + '\n')
+        file.write(str(dtn.strftime("%d-%m-%Y %H:%M")) + ' ' + message.from_user.username + ' id' + str(
+            message.from_user.id) + ' ' + data + '\n')
+
     bot.send_message(message.chat.id, data)
-
-
-
-
-
-
 
 
 @bot.message_handler(commands=['complex'])
@@ -91,11 +82,13 @@ def bot_complex1(message):
     num = bot.send_message(message.chat.id, 'Введите первую цифру первого числа:')
     bot.register_next_step_handler(num, input_complex1_1)
 
+
 def input_complex1_1(message):
     global a
     a = int(message.text)
     num1 = bot.send_message(message.chat.id, 'Введите вторую цифру первого числа:')
     bot.register_next_step_handler(num1, input_complex1_2)
+
 
 def input_complex1_2(message):
     global b
@@ -103,17 +96,20 @@ def input_complex1_2(message):
     num2 = bot.send_message(message.chat.id, 'Введите первую цифру второго числа:')
     bot.register_next_step_handler(num2, input_complex2_1)
 
+
 def input_complex2_1(message):
     global c
     c = int(message.text)
     num3 = bot.send_message(message.chat.id, 'Введите вторую цифру второго числа:')
     bot.register_next_step_handler(num3, input_complex2_2)
 
+
 def input_complex2_2(message):
     global d
     d = int(message.text)
     num4 = bot.send_message(message.chat.id, 'Введите знак(+, -, *, /): ')
     bot.register_next_step_handler(num4, input_complex_sign)
+
 
 def input_complex_sign(message):
     global sign
@@ -125,12 +121,22 @@ def input_complex_sign(message):
     global data
     data = f'{complex.return_x()} {sign} {complex.return_y()} = {result}'
     with open('logdata.txt', 'a') as file:
-        file.write(str(dtn.strftime("%d-%m-%Y %H:%M")) + ' ' + message.from_user.username + ' id' + str(message.from_user.id) + ' ' + data + '\n')
+        file.write(str(dtn.strftime("%d-%m-%Y %H:%M")) + ' ' + message.from_user.username + ' id' + str(
+            message.from_user.id) + ' ' + data + '\n')
 
     bot.send_message(message.chat.id, data)
 
 
-
+@bot.message_handler(commands=['logs'])
+def send_logs(message):
+    with open('logdata.txt', 'r') as file:
+        lines = file.readlines()
+        log = ''
+        for line in lines:
+            if message.from_user.username in line:
+                log += ' '
+                log += str(line)
+    bot.send_message(message.chat.id, 'Ваша история операций:', log)
 
 
 bot.infinity_polling()
