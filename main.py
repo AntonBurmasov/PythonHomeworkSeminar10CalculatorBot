@@ -133,7 +133,8 @@ def send_logs(message):
         lines = file.readlines()
         log = ''
         for line in lines:
-            if message.from_user.username in line:
+            username = str(message.from_user.username)
+            if username in line:
                 log += ' '
                 log += str(line)
     bot.send_message(message.chat.id, 'Ваша история операций:', log)
